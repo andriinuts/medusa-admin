@@ -30,12 +30,15 @@ import AddSalesChannelsForm, {
   AddSalesChannelsFormType,
 } from "./add-sales-channels"
 import AddVariantsForm, { AddVariantsFormType } from "./add-variants"
+import TranslationForm from "../edit/sections/translation/TranslationForm";
+import {TranslationFormDetails} from "../edit/sections/translation/translation-modal";
 
 type NewProductForm = {
   general: GeneralFormType
   discounted: DiscountableFormType
   organize: OrganizeFormType
-  variants: AddVariantsFormType
+  variants: AddVariantsFormType,
+  translation: Record<string, TranslationFormDetails>,
   customs: CustomsFormType
   dimensions: DimensionsFormType
   thumbnail: ThumbnailFormType
@@ -239,6 +242,15 @@ const NewProduct = ({ onClose }: Props) => {
                   />
                 </div>
               </Accordion.Item>
+              <Accordion.Item title="Translations" value="translations">
+                <p className="text-grey-50 inter-base-regular">
+                  Add product description in many languages
+                </p>
+                <div className="mt-large">
+                  <TranslationForm form={nestedForm(form, "translation")}
+                  />
+                </div>
+              </Accordion.Item>
               <Accordion.Item title="Attributes" value="attributes">
                 <p className="inter-base-regular text-grey-50">
                   Used for shipping and customs purposes.
@@ -332,6 +344,9 @@ const createPayload = (
     })),
     // @ts-ignore
     status: publish ? ProductStatus.PUBLISHED : ProductStatus.DRAFT,
+    metadata: {
+      translation: data.translation
+    }
   }
 
   if (salesChannelsEnabled) {
@@ -384,6 +399,7 @@ const createBlank = (): NewProductForm => {
       entries: [],
       options: [],
     },
+    translation: {}
   }
 }
 
