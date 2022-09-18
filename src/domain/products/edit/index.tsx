@@ -8,6 +8,7 @@ import Spinner from "../../../components/atoms/spinner"
 import Section from "../../../components/organisms/section"
 import { getErrorStatus } from "../../../utils/get-error-status"
 import AttributesSection from "./sections/attributes"
+import FieldsSection from "./sections/translation"
 import GeneralSection from "./sections/general"
 import MediaSection from "./sections/media"
 import RawSection from "./sections/raw"
@@ -70,6 +71,7 @@ const Edit = ({ id }: EditProps) => {
       <div className="grid grid-cols-12 gap-x-base">
         <div className="col-span-8 flex flex-col gap-y-xsmall">
           <GeneralSection product={product} />
+          <FieldsSection product={product} />
           <VariantsSection product={product} />
           <AttributesSection product={product} />
           <RawSection product={product} />
