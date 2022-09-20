@@ -9,6 +9,7 @@ import Section from "../../../components/organisms/section"
 import { getErrorStatus } from "../../../utils/get-error-status"
 import AttributesSection from "./sections/attributes"
 import FieldsSection from "./sections/translation"
+import RelatedProductsSection from "./sections/relatedProducts"
 import GeneralSection from "./sections/general"
 import MediaSection from "./sections/media"
 import RawSection from "./sections/raw"
@@ -72,6 +73,7 @@ const Edit = ({ id }: EditProps) => {
         <div className="col-span-8 flex flex-col gap-y-xsmall">
           <GeneralSection product={product} />
           <FieldsSection product={product} />
+          <RelatedProductsSection product={product} />
           <VariantsSection product={product} />
           <AttributesSection product={product} />
           <RawSection product={product} />
