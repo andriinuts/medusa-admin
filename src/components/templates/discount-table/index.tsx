@@ -4,6 +4,7 @@ import { useAdminDiscounts } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useState } from "react"
 import { usePagination, useTable } from "react-table"
+import { useAnalytics } from "../../../context/analytics"
 import Spinner from "../../atoms/spinner"
 import Table, { TablePagination } from "../../molecules/table"
 import DiscountFilters from "../discount-filter-dropdown"
@@ -31,14 +32,25 @@ const DiscountTable: React.FC = () => {
     representationObject,
   } = usePromotionFilters(location.search, defaultQueryProps)
 
+  const { trackNumberOfDiscounts } = useAnalytics()
+
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
 
-  const { discounts, isLoading, count } = useAdminDiscounts({
-    is_dynamic: false,
-    expand: "rule,rule.conditions,rule.conditions.products",
-    ...queryObject,
-  })
+  const { discounts, isLoading, count } = useAdminDiscounts(
+    {
+      is_dynamic: false,
+      expand: "rule,rule.conditions,rule.conditions.products",
+      ...queryObject,
+    },
+    {
+      onSuccess: ({ count }) => {
+        trackNumberOfDiscounts({
+          count,
+        })
+      },
+    }
+  )
 
   const [query, setQuery] = useState("")
   const [numPages, setNumPages] = useState(0)
@@ -159,9 +171,9 @@ const DiscountTable: React.FC = () => {
         className={clsx({ ["relative"]: isLoading })}
       >
         <Table.Head>
-          {headerGroups?.map((headerGroup, index) => (
+          {headerGroups?.map((headerGroup) => (
             <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((col, headerIndex) => (
+              {headerGroup.headers.map((col) => (
                 <Table.HeadCell {...col.getHeaderProps()}>
                   {col.render("Header")}
                 </Table.HeadCell>
@@ -170,14 +182,20 @@ const DiscountTable: React.FC = () => {
           ))}
         </Table.Head>
         {isLoading || !discounts ? (
-          <div className="flex w-full h-full absolute items-center justify-center mt-10">
-            <div className="">
-              <Spinner size={"large"} variant={"secondary"} />
-            </div>
-          </div>
+          <Table.Body {...getTableBodyProps()}>
+            <Table.Row>
+              <Table.Cell colSpan={columns.length}>
+                <div className="flex w-full h-full absolute items-center justify-center mt-10">
+                  <div className="">
+                    <Spinner size={"large"} variant={"secondary"} />
+                  </div>
+                </div>
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
         ) : (
           <Table.Body {...getTableBodyProps()}>
-            {rows.map((row, rowIndex) => {
+            {rows.map((row) => {
               prepareRow(row)
               return <PromotionRow row={row} />
             })}
