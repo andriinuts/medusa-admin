@@ -1,18 +1,16 @@
-import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import {
   useAdminCollection,
   useAdminDeleteCollection,
   useAdminUpdateCollection,
 } from "medusa-react"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../components/molecules/actionables"
-import Breadcrumb from "../../../components/molecules/breadcrumb"
-import ViewRaw from "../../../components/molecules/view-raw"
+import JSONView from "../../../components/molecules/json-view"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
 import Section from "../../../components/organisms/section"
@@ -23,14 +21,16 @@ import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
 import { getErrorMessage } from "../../../utils/error-messages"
 
-const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
-  const ensuredPath = location!.pathname.replace("/a/collections/", ``)
-  const { collection, isLoading, refetch } = useAdminCollection(ensuredPath)
-  const deleteCollection = useAdminDeleteCollection(ensuredPath)
-  const updateCollection = useAdminUpdateCollection(ensuredPath)
+const CollectionDetails = () => {
+  const { id } = useParams()
+
+  const { collection, isLoading, refetch } = useAdminCollection(id!)
+  const deleteCollection = useAdminDeleteCollection(id!)
+  const updateCollection = useAdminUpdateCollection(id!)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showAddProducts, setShowAddProducts] = useState(false)
+  const navigate = useNavigate()
   const notification = useNotification()
   const [updates, setUpdates] = useState(0)
 
@@ -150,7 +150,7 @@ const CollectionDetails: React.FC<RouteComponentProps> = ({ location }) => {
                 <div className="mt-large flex flex-col gap-y-base">
                   <h3 className="inter-base-semibold">Metadata</h3>
                   <div>
-                    <ViewRaw raw={collection.metadata} name="metadata" />
+                    <JSONView data={collection.metadata} />
                   </div>
                 </div>
               )}

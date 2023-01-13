@@ -1,6 +1,5 @@
 import { Product, SalesChannel } from "@medusajs/medusa"
 import clsx from "clsx"
-import { navigate } from "gatsby"
 import {
   useAdminAddProductsToSalesChannel,
   useAdminDeleteProductsFromSalesChannel,
@@ -13,6 +12,7 @@ import React, {
   useRef,
   useState,
 } from "react"
+import { useNavigate } from "react-router-dom"
 import { usePagination, useRowSelect, useTable } from "react-table"
 
 import Button from "../../../components/fundamentals/button"
@@ -33,7 +33,7 @@ import Placeholder from "./placeholder"
 /* ************** TABLE CONFIG ************** */
 /* ****************************************** */
 
-const DEFAULT_PAGE_SIZE = 12
+const DEFAULT_PAGE_SIZE = 7
 
 /**
  * Default filtering config for querying products endpoint.
@@ -96,6 +96,8 @@ export const ProductTable = forwardRef(
 
     const offs = parseInt(queryObject.offset) || 0
     const limit = parseInt(queryObject.limit)
+
+    const navigate = useNavigate()
 
     const [query, setQuery] = useState(queryObject.query)
     const [numPages, setNumPages] = useState(0)
@@ -294,7 +296,7 @@ const ProductRow = ({ row, actions, onClick, disabled }) => {
       onClick={!disabled && onClick}
       color={"inherit"}
       className={clsx("cursor-pointer", {
-        "bg-grey-5 cursor-pointer": row.isSelected,
+        "bg-grey-5": row.isSelected,
         "opacity-40 cursor-not-allowed pointer-events-none": disabled,
       })}
       actions={actions}
@@ -373,9 +375,8 @@ function SalesChannelProductsTable(props: SalesChannelProductsTableProps) {
   const params = useQueryFilters(defaultQueryProps)
   const filters = useProductFilters()
 
-  const {
-    mutate: deleteProductsFromSalesChannel,
-  } = useAdminDeleteProductsFromSalesChannel(salesChannelId)
+  const { mutate: deleteProductsFromSalesChannel } =
+    useAdminDeleteProductsFromSalesChannel(salesChannelId)
 
   const { products, count, isLoading } = useAdminProducts({
     ...params.queryObject,
@@ -468,10 +469,8 @@ function SalesChannelProductsSelectModal(
     expand: "sales_channels",
   })
 
-  const {
-    mutate: addProductsBatch,
-    isLoading: isMutating,
-  } = useAdminAddProductsToSalesChannel(salesChannel.id)
+  const { mutate: addProductsBatch, isLoading: isMutating } =
+    useAdminAddProductsToSalesChannel(salesChannel.id)
 
   const handleSubmit = () => {
     addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })

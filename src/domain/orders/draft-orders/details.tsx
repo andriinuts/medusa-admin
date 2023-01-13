@@ -1,6 +1,4 @@
 import { Address } from "@medusajs/medusa"
-import { RouteComponentProps } from "@reach/router"
-import { navigate } from "gatsby"
 import {
   useAdminDeleteDraftOrder,
   useAdminDraftOrder,
@@ -9,8 +7,8 @@ import {
   useAdminUpdateDraftOrder,
 } from "medusa-react"
 import moment from "moment"
-import React, { useEffect, useState } from "react"
-import ReactJson from "react-json-view"
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import Avatar from "../../../components/atoms/avatar"
 import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
@@ -22,7 +20,9 @@ import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
+import JSONView from "../../../components/molecules/json-view"
 import BodyCard from "../../../components/organisms/body-card"
+import ConfirmationPrompt from "../../../components/organisms/confirmation-prompt"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { AddressType } from "../../../components/templates/address-form"
 import useNotification from "../../../hooks/use-notification"
@@ -32,16 +32,15 @@ import extractCustomerName from "../../../utils/extract-customer-name"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import AddressModal from "../details/address-modal"
 import { DisplayTotal, FormattedAddress } from "../details/templates"
-import ConfirmationPrompt from "../../../components/organisms/confirmation-prompt"
 
-type DraftOrderDetailsProps = RouteComponentProps<{ id: string }>
+type DeletePromptData = {
+  resource: string
+  onDelete: () => any
+  show: boolean
+}
 
-const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
-  type DeletePromptData = {
-    resource: string
-    onDelete: () => any
-    show: boolean
-  }
+const DraftOrderDetails = () => {
+  const { id } = useParams()
 
   const initDeleteState: DeletePromptData = {
     resource: "",
@@ -49,19 +48,17 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
     show: false,
   }
 
-  const [deletePromptData, setDeletePromptData] = useState<DeletePromptData>(
-    initDeleteState
-  )
+  const [deletePromptData, setDeletePromptData] =
+    useState<DeletePromptData>(initDeleteState)
   const [addressModal, setAddressModal] = useState<null | {
     address: Address
     type: AddressType
   }>(null)
 
-  const [showMarkAsPaidConfirmation, setShowAsPaidConfirmation] = useState(
-    false
-  )
+  const [showMarkAsPaidConfirmation, setShowAsPaidConfirmation] =
+    useState(false)
 
-  const { draft_order, isLoading } = useAdminDraftOrder(id)
+  const { draft_order, isLoading } = useAdminDraftOrder(id!)
   const { store, isLoading: isLoadingStore } = useAdminStore()
 
   const [paymentLink, setPaymentLink] = useState("")
@@ -74,10 +71,11 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
     }
   }, [isLoading, isLoadingStore])
 
-  const markPaid = useAdminDraftOrderRegisterPayment(id)
-  const cancelOrder = useAdminDeleteDraftOrder(id)
-  const updateOrder = useAdminUpdateDraftOrder(id)
+  const markPaid = useAdminDraftOrderRegisterPayment(id!)
+  const cancelOrder = useAdminDeleteDraftOrder(id!)
+  const updateOrder = useAdminUpdateDraftOrder(id!)
 
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const OrderStatusComponent = () => {
@@ -378,11 +376,7 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
                         </span>
                       </span>
                       <div className="flex flex-grow items-center mt-4">
-                        <ReactJson
-                          name={false}
-                          collapsed={true}
-                          src={method?.data}
-                        />
+                        <JSONView data={method?.data} />
                       </div>
                     </div>
                   </div>
@@ -468,15 +462,10 @@ const DraftOrderDetails = ({ id }: DraftOrderDetailsProps) => {
               </div>
             </BodyCard>
             <BodyCard
-              className={"w-full mb-4 min-h-0 h-auto"}
+              className={"w-full mb-4 min-h-0 h-auto pt-[15px]"}
               title="Raw Draft Order"
             >
-              <ReactJson
-                style={{ marginTop: "15px" }}
-                name={false}
-                collapsed={true}
-                src={draft_order!}
-              />
+              <JSONView data={draft_order!} />
             </BodyCard>
           </div>
         </div>
