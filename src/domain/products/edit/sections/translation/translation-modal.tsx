@@ -5,7 +5,7 @@ import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import { nestedForm } from "../../../../../utils/nested-form"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
-import TranslationForm from "./TranslationForm";
+import TranslationForm from "./TranslationForm"
 
 type Props = {
   product: Product
@@ -14,8 +14,8 @@ type Props = {
 }
 
 export type TranslationFormDetails = {
-  description?: string;
-  material?: string;
+  description?: string
+  material?: string
 }
 
 export type TranslationFormType = {
@@ -35,7 +35,7 @@ const TranslationModal = ({ product, open, onClose }: Props) => {
 
   useEffect(() => {
     reset(getDefaultValues(product))
-  }, [product])
+  }, [product, reset])
 
   const onReset = () => {
     reset(getDefaultValues(product))
@@ -45,7 +45,7 @@ const TranslationModal = ({ product, open, onClose }: Props) => {
   const onSubmit = handleSubmit((data) => {
     onUpdate(
       {
-       metadata: {...product.metadata, ...data}
+        metadata: { ...product.metadata, ...data },
       },
       onReset
     )
@@ -96,7 +96,10 @@ const TranslationModal = ({ product, open, onClose }: Props) => {
 
 const getDefaultValues = (product: Product): TranslationFormType => {
   return {
-    translation: (product.metadata?.translation as Record<string, TranslationFormDetails>) || {uk: {}, en: {}},
+    translation: (product.metadata?.translation as Record<
+      string,
+      TranslationFormDetails
+    >) || { uk: {}, en: {} },
   }
 }
 

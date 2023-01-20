@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
-import RelatedProductsForm from "./RelatedProductsForm";
+import RelatedProductsForm from "./RelatedProductsForm"
 
 type Props = {
   product: Product
@@ -13,7 +13,7 @@ type Props = {
 }
 
 export type RelatedProductsFormType = {
-  relatedProducts: string[];
+  relatedProducts: string[]
 }
 
 const RelatedProductsModal = ({ product, open, onClose }: Props) => {
@@ -30,7 +30,7 @@ const RelatedProductsModal = ({ product, open, onClose }: Props) => {
 
   useEffect(() => {
     reset(getDefaultValues(product))
-  }, [product])
+  }, [product, reset])
 
   const onReset = () => {
     reset(getDefaultValues(product))
@@ -40,7 +40,7 @@ const RelatedProductsModal = ({ product, open, onClose }: Props) => {
   const onSubmit = handleSubmit((data) => {
     onUpdate(
       {
-       metadata: {...product.metadata, ...data}
+        metadata: { ...product.metadata, ...data },
       },
       onReset
     )
@@ -54,13 +54,13 @@ const RelatedProductsModal = ({ product, open, onClose }: Props) => {
         </Modal.Header>
         <form onSubmit={onSubmit}>
           <Modal.Content>
-              <Controller
-                  name="relatedProducts"
-                  control={control}
-                  render={({ field: { value, onChange } }) => (
-                    <RelatedProductsForm value={value} onChange={onChange} />
-                  )}
-              />
+            <Controller
+              name="relatedProducts"
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <RelatedProductsForm value={value} onChange={onChange} />
+              )}
+            />
           </Modal.Content>
           <Modal.Footer>
             <div className="flex gap-x-2 justify-end w-full">
