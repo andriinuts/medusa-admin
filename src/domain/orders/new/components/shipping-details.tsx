@@ -19,13 +19,15 @@ import isNullishObject from "../../../../utils/is-nullish-object"
 import mapAddressToForm from "../../../../utils/map-address-to-form"
 import { nestedForm } from "../../../../utils/nested-form"
 import { useNewOrderForm } from "../form"
+import NovaposhtaShipping from "./novaposhta-shipping/novaposhta-shipping"
+import { isValidPhoneNumber } from "react-phone-number-input"
 
 const ShippingDetails = () => {
   const [addNew, setAddNew] = useState(false)
   const { disableNextPage, enableNextPage } = useContext(SteppedContext)
 
   const {
-    context: { validCountries },
+    context: { validCountries, selectedShippingOption },
     form,
   } = useNewOrderForm()
 
@@ -143,6 +145,38 @@ const ShippingDetails = () => {
     }
   }, [shippingAddress, email])
 
+  useEffect(() => {
+    if (selectedShippingOption?.provider_id !== "novaposhta") {
+      return
+    }
+
+    if (
+      !shippingAddress?.first_name ||
+      !shippingAddress?.last_name ||
+      !shippingAddress?.address_1 ||
+      !shippingAddress?.city ||
+      !shippingAddress?.country_code ||
+      !shippingAddress?.phone ||
+      !isValidPhoneNumber(
+        shippingAddress?.phone,
+        shippingAddress.country_code.value.toUpperCase() as any
+      )
+    ) {
+      disableNextPage()
+      setRequiredFields(true)
+    } else {
+      enableNextPage()
+    }
+  }, [shippingAddress, email, selectedShippingOption?.provider_id])
+
+  if (selectedShippingOption?.provider_id === "novaposhta") {
+    return (
+      <div>
+        <NovaposhtaShipping />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-[705px] flex flex-col gap-y-8">
       <div>
@@ -182,11 +216,11 @@ const ShippingDetails = () => {
           required
           // @ts-ignore
           prefix={
-            !!customerId ? (
+            customerId ? (
               <LockIcon size={16} className="text-grey-40" />
             ) : undefined
           }
-          tabIndex={!!customerId ? -1 : 0}
+          tabIndex={customerId ? -1 : 0}
         />
       </div>
 

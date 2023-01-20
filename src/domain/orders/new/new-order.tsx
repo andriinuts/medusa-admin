@@ -7,7 +7,6 @@ import SteppedModal, {
 } from "../../../components/molecules/modal/stepped-modal"
 import useNotification from "../../../hooks/use-notification"
 import isNullishObject from "../../../utils/is-nullish-object"
-import Billing from "./components/billing-details"
 import Items from "./components/items"
 import SelectRegionScreen from "./components/select-region"
 import SelectShippingMethod from "./components/select-shipping"
@@ -29,12 +28,13 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
 
   const {
     form: { handleSubmit, reset },
-    context: { region },
+    context: { selectedShippingOption },
   } = useNewOrderForm()
 
   const onSubmit = handleSubmit((data) => {
     mutate(
       {
+        no_notification_order: true,
         email: data.email,
         items: data.items.map((i) => {
           if (i.variant_id) {
@@ -54,6 +54,13 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
         shipping_methods: [
           {
             option_id: data.shipping_option.value,
+            data:
+              selectedShippingOption?.provider_id === "novaposhta"
+                ? {
+                    city: data.shipping_option_data.city.value,
+                    warehouse: data.shipping_option_data.warehouse.value,
+                  }
+                : undefined,
             price: data.custom_shipping_price
               ? data.custom_shipping_price
               : undefined,
@@ -77,7 +84,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
           : undefined,
         billing_address: data.billing_address_id
           ? data.billing_address_id
-          : data.billing_address
+          : data.billing_address?.address_1
           ? {
               address_1: data.billing_address?.address_1,
               address_2: data.billing_address?.address_2 || undefined,
@@ -121,7 +128,6 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
         <Items />,
         <SelectShippingMethod />,
         <ShippingDetails />,
-        <Billing />,
         <Summary />,
       ]}
       lastScreenIsSummary={true}

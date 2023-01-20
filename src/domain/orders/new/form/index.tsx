@@ -39,6 +39,7 @@ export type NewOrderForm = {
   shipping_option: Option
   customer_id?: Option | null
   email: string
+  shipping_option_data: any
   custom_shipping_price?: number
   discount_code?: string
   same_as_shipping?: boolean
