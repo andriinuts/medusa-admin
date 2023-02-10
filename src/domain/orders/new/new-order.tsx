@@ -61,9 +61,10 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
                     warehouse: data.shipping_option_data.warehouse.value,
                   }
                 : undefined,
-            price: data.custom_shipping_price
-              ? data.custom_shipping_price
-              : undefined,
+            price:
+              typeof data.custom_shipping_price === "number"
+                ? data.custom_shipping_price
+                : undefined,
           },
         ],
         shipping_address: data.shipping_address_id
