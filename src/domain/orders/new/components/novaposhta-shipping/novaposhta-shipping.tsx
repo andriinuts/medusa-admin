@@ -9,6 +9,7 @@ import { AccountContext } from "../../../../../context/account"
 import { GhostSmallLoading } from "../../../../../components/fundamentals/button/button.stories"
 import { isValidPhoneNumber } from "react-phone-number-input"
 import PhoneInput from "react-phone-number-input/react-hook-form-input"
+import medusaRequest from "../../../../../services/request"
 
 type Props = {}
 
@@ -32,12 +33,12 @@ const NovaposhtaShipping: FC<Props> = () => {
   }
 
   const getNPCities = async (name: string) => {
-    const rez = await fetch(
-      `${medusaUrl}/store/np/cities?name=${encodeURI(name)}&limit=20`
+    const { data } = await medusaRequest(
+      "GET",
+      `${medusaUrl}/admin/np/cities?name=${encodeURI(name)}&limit=20`
     )
-    const { data = [] } = (await rez.json()) || {}
 
-    const options = (data as any)?.map((item) => ({
+    const options = (data.data as any)?.map((item) => ({
       label: item.Description,
       value: { ref: item.Ref, title: item.Description },
     }))
@@ -47,12 +48,12 @@ const NovaposhtaShipping: FC<Props> = () => {
 
   const loadWarehouses = async (cityRef: string) => {
     setIsWarehousesLoading(true)
-    const rez = await fetch(
-      `${medusaUrl}/store/np/warehouses?city=${encodeURI(cityRef)}`
+    const { data } = await medusaRequest(
+      "GET",
+      `${medusaUrl}/admin/np/warehouses?city=${encodeURI(cityRef)}`
     )
-    const { data = [] } = (await rez.json()) || {}
 
-    const options = (data as any)?.map((item) => ({
+    const options = (data.data as any)?.map((item) => ({
       label: item.Description,
       value: {
         ref: item.Ref,
