@@ -1,11 +1,11 @@
-import React, { FC, useCallback, useContext, useEffect, useState } from "react"
+import React, { FC, useCallback, useEffect, useState } from "react"
+import { useAdminGetSession } from "medusa-react"
 import { useNewOrderForm } from "../../form"
 import { Controller } from "react-hook-form"
 import { medusaUrl } from "../../../../../services/config"
 import Select from "../../../../../components/molecules/select"
 import Input from "../../../../../components/molecules/input"
 import FormValidator from "../../../../../utils/form-validator"
-import { AccountContext } from "../../../../../context/account"
 import { GhostSmallLoading } from "../../../../../components/fundamentals/button/button.stories"
 import { isValidPhoneNumber } from "react-phone-number-input"
 import PhoneInput from "react-phone-number-input/react-hook-form-input"
@@ -14,7 +14,7 @@ import medusaRequest from "../../../../../services/request"
 type Props = {}
 
 const NovaposhtaShipping: FC<Props> = () => {
-  const { email } = useContext(AccountContext)
+  const { user } = useAdminGetSession()
   const [isWarehousesLoading, setIsWarehousesLoading] = useState(false)
   const [warehouses, setWarehouses] = useState<any>([])
   const {
@@ -38,12 +38,10 @@ const NovaposhtaShipping: FC<Props> = () => {
       `${medusaUrl}/admin/np/cities?name=${encodeURI(name)}&limit=20`
     )
 
-    const options = (data.data as any)?.map((item) => ({
+    return (data.data as any)?.map((item) => ({
       label: item.Description,
       value: { ref: item.Ref, title: item.Description },
     }))
-
-    return options
   }
 
   const loadWarehouses = async (cityRef: string) => {
@@ -79,8 +77,11 @@ const NovaposhtaShipping: FC<Props> = () => {
   )
 
   useEffect(() => {
-    setValue("email", email)
-  }, [email, setValue])
+    if (!user?.email) {
+      return
+    }
+    setValue("email", user.email)
+  }, [user?.email, setValue])
 
   useEffect(() => {
     const city = getValues("shipping_option_data.city")
@@ -92,7 +93,7 @@ const NovaposhtaShipping: FC<Props> = () => {
   return (
     <>
       <span className="inter-base-semibold">General</span>
-      <div className="grid grid-cols-2 gap-large mt-4 mb-8">
+      <div className="mt-4 mb-8 grid grid-cols-2 gap-large">
         <Input
           {...register("shipping_address.first_name", {
             required: true,
@@ -159,7 +160,7 @@ const NovaposhtaShipping: FC<Props> = () => {
             }}
           />
 
-          <div className="mt-4 relative">
+          <div className="relative mt-4">
             <Controller
               control={control}
               name="shipping_option_data.warehouse"
