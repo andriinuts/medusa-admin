@@ -21,7 +21,7 @@ const useViewProductColumns = () => {
         accessor: "thumbnail",
         Cell: ({ cell: { value } }) => (
           <Table.Cell className="w-[0%] pr-base">
-            <div className="h-[40px] w-[30px] bg-grey-5 rounded-soft overflow-hidden my-xsmall">
+            <div className="h-[40px] w-[40px] bg-grey-5 rounded-soft overflow-hidden my-xsmall">
               {value ? (
                 <img
                   src={value}

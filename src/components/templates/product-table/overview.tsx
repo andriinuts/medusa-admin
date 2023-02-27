@@ -76,11 +76,11 @@ const ProductTile = ({ product }) => {
         <Link to={`${product.id}`}>
           {product.thumbnail ? (
             <img
-              className="min-h-[230px] block object-cover rounded-rounded"
+              className="h-[180px] w-[180px] block object-cover rounded-rounded"
               src={product.thumbnail}
             />
           ) : (
-            <div className="min-h-[230px] flex items-center justify-center bg-grey-5 rounded-rounded">
+            <div className="h-[180px] w-[180px] flex items-center justify-center bg-grey-5 rounded-rounded">
               <ImagePlaceholder />
             </div>
           )}

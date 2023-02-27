@@ -266,7 +266,7 @@ const OrderEditChangeItem: React.FC<OrderEditChangeItemProps> = ({
   return (
     <div className="flex gap-x-base mt-xsmall">
       <div>
-        <div className="flex h-[40px] w-[30px] rounded-rounded overflow-hidden">
+        <div className="flex h-[40px] w-[40px] rounded-rounded overflow-hidden">
           {lineItem?.thumbnail ? (
             <img src={lineItem.thumbnail} className="object-cover" />
           ) : (
