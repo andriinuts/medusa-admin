@@ -33,7 +33,9 @@ const MarkShippedModal: React.FC<MarkShippedModalProps> = ({
 }) => {
   const { control, watch, handleSubmit } = useForm<MarkShippedFormData>({
     defaultValues: {
-      tracking_numbers: [{ value: "" }],
+      tracking_numbers: [
+        { value: (fulfillment.data.data as any)?.[0]?.IntDocNumber || "" },
+      ],
     },
     shouldUnregister: true,
   })

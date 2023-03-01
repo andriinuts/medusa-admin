@@ -40,7 +40,11 @@ const NovaposhtaShipping: FC<Props> = () => {
 
     return (data.data as any)?.map((item) => ({
       label: item.Description,
-      value: { ref: item.Ref, title: item.Description },
+      value: {
+        ref: item.Ref,
+        title: item.Description,
+        settlementType: item.SettlementTypeDescription,
+      },
     }))
   }
 
@@ -56,6 +60,7 @@ const NovaposhtaShipping: FC<Props> = () => {
       value: {
         ref: item.Ref,
         title: item.Description,
+        number: item.Number
       },
     }))
 
@@ -95,21 +100,21 @@ const NovaposhtaShipping: FC<Props> = () => {
       <span className="inter-base-semibold">General</span>
       <div className="mt-4 mb-8 grid grid-cols-2 gap-large">
         <Input
-          {...register("shipping_address.first_name", {
-            required: true,
-            pattern: FormValidator.whiteSpaceRule("First name"),
-          })}
-          placeholder="First Name"
-          label="First Name"
-          required
-        />
-        <Input
           {...register("shipping_address.last_name", {
             required: true,
             pattern: FormValidator.whiteSpaceRule("Last name"),
           })}
           placeholder="Last Name"
           label="Last Name"
+          required
+        />
+        <Input
+          {...register("shipping_address.first_name", {
+            required: true,
+            pattern: FormValidator.whiteSpaceRule("First name"),
+          })}
+          placeholder="First Name"
+          label="First Name"
           required
         />
 

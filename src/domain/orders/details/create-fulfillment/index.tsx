@@ -22,6 +22,9 @@ import Metadata, {
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import CreateFulfillmentItemsTable from "./item-table"
+import NovaposhtaFulfillment, {
+  defaultNovaposhtaMetadata,
+} from "./novaposhta-fulfillment/novaposhta-fulfillment"
 
 type CreateFulfillmentModalProps = {
   handleCancel: () => void
@@ -42,6 +45,19 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
   const [metadata, setMetadata] = useState<MetadataField[]>([
     { key: "", value: "" },
   ])
+  const [novaposhtaMetadata, setNovaposhtaMetadata] = useState<
+    Record<string, string | undefined>
+  >(defaultNovaposhtaMetadata)
+
+  const isNovaposhta =
+    orderToFulfill.shipping_methods?.[0]?.shipping_option?.provider_id ===
+    "novaposhta"
+
+  const needOptions =
+    isNovaposhta &&
+    (!novaposhtaMetadata?.weight ||
+      !novaposhtaMetadata?.description ||
+      !novaposhtaMetadata.volume)
 
   const items =
     "items" in orderToFulfill
@@ -71,16 +87,18 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
     let successText = "Successfully fulfilled order"
     let requestObj
 
-    const preparedMetadata = metadata.reduce((acc, next) => {
-      if (next.key) {
-        return {
-          ...acc,
-          [next.key]: next.value,
-        }
-      } else {
-        return acc
-      }
-    }, {})
+    const preparedMetadata = isNovaposhta
+      ? novaposhtaMetadata
+      : metadata.reduce((acc, next) => {
+          if (next.key) {
+            return {
+              ...acc,
+              [next.key]: next.value,
+            }
+          } else {
+            return acc
+          }
+        }, {})
 
     switch (type) {
       case "swap":
@@ -140,7 +158,14 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
               setQuantities={setQuantities}
             />
             <div className="mt-4">
-              <Metadata metadata={metadata} setMetadata={setMetadata} />
+              {isNovaposhta ? (
+                <NovaposhtaFulfillment
+                  metadata={novaposhtaMetadata}
+                  setMetadata={setNovaposhtaMetadata}
+                />
+              ) : (
+                <Metadata metadata={metadata} setMetadata={setMetadata} />
+              )}
             </div>
           </div>
         </Modal.Content>
@@ -184,7 +209,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
                 size="large"
                 className="w-32 text-small justify-center"
                 variant="primary"
-                disabled={!toFulfill?.length || isSubmitting}
+                disabled={!toFulfill?.length || isSubmitting || needOptions}
                 onClick={createFulfillment}
                 loading={isSubmitting}
               >

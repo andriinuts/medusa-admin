@@ -11,6 +11,7 @@ import Actionables from "../../../../components/molecules/actionables"
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import CopyToClipboard from "../../../../components/atoms/copy-to-clipboard"
 import { TrackingLink } from "./tracking-link"
 
 export const FormattedFulfillment = ({
@@ -98,6 +99,20 @@ export const FormattedFulfillment = ({
                 fulfillment.provider_id
               )}`}
         </div>
+        {!fulfillment.canceled_at && !fulfillment.shipped_at && (
+          <>
+            {!!fulfillment.data.data?.length && (
+              <CopyToClipboard
+                value={fulfillment.data.data?.[0]?.IntDocNumber}
+                iconSize={16}
+              />
+            )}
+            {!!fulfillment.data.errors?.length &&
+              fulfillment.data.errors.map((error) => (
+                <div className="text-red-600">{error}</div>
+              ))}
+          </>
+        )}
         <div className="flex text-grey-50">
           {!fulfillment.shipped_at ? "Not shipped" : "Tracking"}
           {hasLinks &&
